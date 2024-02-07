@@ -74,29 +74,9 @@ def detect_and_segment_boxes(image_path, grounding_dino_model_name, sam_model_na
     image.save(os.path.join(image_class_folder, f"{train_class_joined}.jpg"))
 
 
-    # draw = ImageDraw.Draw(image)
-    # for box in boxes:
-    #     draw.rectangle(box.numpy(), outline="blue", width=1)
-    # draw.rectangle(biggest_box.numpy(), outline="red", width=3)
-
-  
-
-    # image.save(os.path.join(output_folder, "original"))
 
 
-    
 
-    # Segment boxes using SAM model
-    # if boxes.shape[0] > 0:
-    #     images, _ = sam_segment(sam_model, image, boxes)
-    #     if images:
-    #         output_image = Image.fromarray(
-    #             np.clip(255. * images[0].cpu().numpy(), 0, 255).astype(np.uint8))
-    #         output_image.save(output_filename)
-    #     else:
-    #         print("No boxes detected above the threshold.")
-    # else:
-    #     print("No boxes detected.")
 def canny_edge_detector(image, dilation):
     # Read the image
 
@@ -122,7 +102,7 @@ def canny_edge_detector(image, dilation):
     return Image.fromarray(dilated_edges_rgb)
 
 if __name__ == "__main__":
-    image_path = "IMG_1377.jpeg"
+    image_path = sys.argv[1]
     # image_path = "ComfyUI_temp_upbiy_00029_.png"  # Path to the input image
     grounding_dino_model_name = "GroundingDINO_SwinT_OGC (694MB)"  # GroundingDINO model name
     sam_model_name = "sam_hq_vit_b (379MB)"  # SAM model name
