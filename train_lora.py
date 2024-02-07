@@ -42,6 +42,8 @@ def create_training_script(train_folder, model_path):
     """
 
     print(command)
+    print(" ".join(line.strip() for line in command.splitlines()))
+
     return " ".join(line.strip() for line in command.splitlines())
 
 def install_kohya():
@@ -87,13 +89,12 @@ if __name__ == "__main__":
     if not os.path.exists(train_folder):
         os.makedirs(train_folder)
 
-    install_kohya()
-    install_grounddino()
-    download_image(sys.argv[1])
-    download_model(model, train_folder)
-    #image name from url
-    image_name = sys.argv[1].split("/")[-1]
-    generate_training_data(image_name, train_folder)
+    # install_kohya()
+    # install_grounddino()
+    # download_image(sys.argv[1])
+    # download_model(model, train_folder)
+    # image_name = sys.argv[1].split("/")[-1]
+    # generate_training_data(image_name, train_folder)
     train(train_path, model_path)
     #TODO: Upload to huggung face
    
