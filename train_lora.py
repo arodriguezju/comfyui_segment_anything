@@ -19,7 +19,7 @@ def create_training_script(train_folder, model_path):
     --network_module=networks.lora 
     --text_encoder_lr=0.0004 
     --unet_lr=0.0004 
-    --network_dim=256 
+    --network_dim=512
     --output_name="last" 
     --lr_scheduler_num_cycles="10" 
     --no_half_vae 
@@ -58,8 +58,11 @@ def install_grounddino():
 def download_image(image_url):
     os.system(f"wget {image_url}")
 
-def download_model(model_url, train_dir):
-    os.system(f"wget -P {train_dir} {model_url} --content-disposition")
+def download_model(model_name, train_dir):    
+    if not os.path.isfile(os.path.join(train_dir, model_name)):
+        model_url = model_paths_maps[model_name]
+        os.system(f"wget -P {train_dir} {model_url} --content-disposition")
+    
 
 def generate_training_data(image_name, train_dir):
      os.system(f"python comfyui_segment_anything/detect.py {image_name} output")
@@ -70,17 +73,24 @@ def train(image_folder, model_path):
     training_command = create_training_script(absolute_image_folder, absolute_model_folder)
     os.system(training_command)
 
+model_paths_maps = {
+    "epicrealism_pureEvolutionV5.safetensors": "https://civitai.com/api/download/models/134065",
+}
+
 if __name__ == "__main__":
     train_folder = "output"
+    model = "epicrealism_pureEvolutionV5.safetensors"
+
     if not os.path.exists(train_folder):
         os.makedirs(train_folder)
 
     install_kohya()
     install_grounddino()
     download_image(sys.argv[1])
-    download_model("https://civitai.com/api/download/models/134065", train_folder)
+    download_model(model, train_folder)
     #image name from url
     image_name = sys.argv[1].split("/")[-1]
     generate_training_data(image_name, train_folder)
     train(os.path.join(train_folder, "train_img"), ".")
+    #TODO: Upload to huggung face
    
