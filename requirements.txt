@@ -2,3 +2,5 @@ segment_anything
 timm
 addict
 yapf
+transformers
+opencv-python
