@@ -41,6 +41,7 @@ def create_training_script(train_folder, model_path):
     --noise_offset=0.0
     """
 
+    print(command)
     return " ".join(line.strip() for line in command.splitlines())
 
 if __name__ == "__main__":
