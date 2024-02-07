@@ -10,8 +10,8 @@ def create_training_script(train_folder, model_path):
     --enable_bucket 
     --min_bucket_reso=256 
     --max_bucket_reso=2048
-    --pretrained_model_name_or_path="${model_path}" 
-    --train_data_dir="${train_folder}" 
+    --pretrained_model_name_or_path="{model_path}" 
+    --train_data_dir="{train_folder}" 
     --resolution="512,512" 
     --output_dir="/workspace/output_training" 
     --network_alpha="1" 
