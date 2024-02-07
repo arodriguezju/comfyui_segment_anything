@@ -4,7 +4,7 @@ import os
 import sys
 
 def create_training_script(train_folder, model_path):
-    command = """accelerate launch 
+    command = f"""accelerate launch 
     --num_cpu_threads_per_process=2 
     "./train_network.py"
     --enable_bucket 
