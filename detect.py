@@ -108,7 +108,7 @@ if __name__ == "__main__":
     sam_model_name = "sam_hq_vit_b (379MB)"  # SAM model name
     prompt = "earring"  # Prompt to detect boxes
     threshold = 0.5  # Detection threshold
-    output_folder = sys.argv[1]  # Path for the output image
+    output_folder = sys.argv[2]  # Path for the output image
     crop_resolution = 256
     train_repeats = 20
     train_class = "TOKstyle earring"
