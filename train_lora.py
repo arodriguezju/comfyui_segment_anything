@@ -51,6 +51,7 @@ def install_kohya():
     os.system(f"pip install bitsandbytes")
     os.system(f"apt-get update")
     os.system(f"apt-get install python3-tk")
+    os.chdir("..")
 
 def install_grounddino():
     os.system(f"git clone https://github.com/arodriguezju/comfyui_segment_anything.git")
