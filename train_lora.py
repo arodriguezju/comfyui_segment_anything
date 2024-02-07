@@ -81,7 +81,9 @@ model_paths_maps = {
 if __name__ == "__main__":
     train_folder = "output"
     model = "epicrealism_pureEvolutionV5.safetensors"
-    model_path = os.path.join(train_folder, model)
+    model_path = os.path.abspath(os.path.join(train_folder, model))
+    train_path = os.path.abspath(os.path.join(train_folder, "train_img"))
+
     if not os.path.exists(train_folder):
         os.makedirs(train_folder)
 
@@ -92,6 +94,6 @@ if __name__ == "__main__":
     #image name from url
     image_name = sys.argv[1].split("/")[-1]
     generate_training_data(image_name, train_folder)
-    train(os.path.join(train_folder, model_path), ".")
+    train(train_path, model_path)
     #TODO: Upload to huggung face
    
