@@ -4,7 +4,7 @@ import os
 import sys
 
 def create_training_script(train_folder, model_path):
-    return """accelerate launch 
+    command = """accelerate launch 
     --num_cpu_threads_per_process=2 
     "./train_network.py"
     --enable_bucket 
@@ -39,7 +39,9 @@ def create_training_script(train_folder, model_path):
     --xformers 
     --bucket_no_upscale 
     --noise_offset=0.0
-"""
+    """
+
+    return "".join(line.strip() for line in command.splitlines())
 
 if __name__ == "__main__":
     absolute_image_folder = sys.argv[1]  
