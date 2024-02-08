@@ -57,6 +57,9 @@ def install_kohya():
 
 def install_grounddino():
     os.system(f"git clone https://github.com/arodriguezju/comfyui_segment_anything.git")
+    os.chdir("comfyui_segment_anything")
+    os.system(f"pip install -r requirements.txt")
+    os.chdir("..")
 
 def download_image(image_url):
     os.system(f"wget {image_url}")
