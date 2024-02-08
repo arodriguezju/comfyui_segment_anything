@@ -23,7 +23,7 @@ def create_training_script(train_folder, model_path):
     --output_name="last" 
     --max_train_epochs=20
     --no_half_vae 
-    --learning_rate=0.0004"
+    --learning_rate=0.0004
     --lr_scheduler="constant" 
     --train_batch_size="1" 
     --save_every_n_epochs="1" 
