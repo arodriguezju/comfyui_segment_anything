@@ -19,9 +19,9 @@ def create_training_script(train_folder, model_path):
     --network_module=networks.lora 
     --text_encoder_lr=0.0004 
     --unet_lr=0.0004 
-    --network_dim=512
+    --network_dim=1024
     --output_name="last" 
-    --lr_scheduler_num_cycles="10" 
+    --max_train_epochs=20
     --no_half_vae 
     --learning_rate="0.0004" 
     --lr_scheduler="constant" 
@@ -88,13 +88,13 @@ if __name__ == "__main__":
 
     if not os.path.exists(train_folder):
         os.makedirs(train_folder)
-
-    # install_kohya()
-    # install_grounddino()
-    # download_image(sys.argv[1])
-    # download_model(model, train_folder)
-    # image_name = sys.argv[1].split("/")[-1]
-    # generate_training_data(image_name, train_folder)
+    image_url = "https://huggingface.co/datasets/crom87/test-upload/resolve/main/IMG_1377.jpeg"#sys.argv[1]
+    install_kohya()
+    install_grounddino()
+    download_image(image_url)
+    download_model(model, train_folder)
+    image_name = image_url.split("/")[-1]
+    generate_training_data(image_name, train_folder)
     train(train_path, model_path)
     #TODO: Upload to huggung face
    
