@@ -16,11 +16,11 @@ def create_training_script(train_folder, model_path):
     --output_dir="/workspace/output_training" 
     --network_alpha="1" 
     --save_model_as=safetensors 
-    --network_module=networks.dylora 
+    --network_module=networks.lora 
     --text_encoder_lr=0.0004 
     --unet_lr=0.0004 
     --network_dim=1024
-    --output_name="last" 
+    --output_name="epicr-earring-1024" 
     --max_train_epochs=60
     --no_half_vae 
     --learning_rate=0.0004
@@ -38,9 +38,7 @@ def create_training_script(train_folder, model_path):
     --gradient_checkpointing 
     --xformers 
     --bucket_no_upscale 
-    --noise_offset=0.0
-    --network_module=networks.dylora 
-    --network_args conv_dim="1024" conv_alpha="1" unit="256"
+    --noise_offset=0.0   
     """
 
     print(command)
