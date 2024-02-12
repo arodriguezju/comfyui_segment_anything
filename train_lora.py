@@ -21,7 +21,7 @@ def create_training_script(train_folder, model_path):
     --unet_lr=0.0004 
     --network_dim=1024
     --output_name="epicr-earring-1024" 
-    --max_train_epochs=60
+    --max_train_epochs=100
     --no_half_vae 
     --learning_rate=0.0004
     --lr_scheduler="constant" 
