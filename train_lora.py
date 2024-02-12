@@ -16,7 +16,7 @@ def create_training_script(train_folder, model_path):
     --output_dir="/workspace/output_training" 
     --network_alpha="1" 
     --save_model_as=safetensors 
-    --network_module=networks.lora 
+    --network_module=networks.dylora 
     --text_encoder_lr=0.0004 
     --unet_lr=0.0004 
     --network_dim=1024
@@ -39,6 +39,8 @@ def create_training_script(train_folder, model_path):
     --xformers 
     --bucket_no_upscale 
     --noise_offset=0.0
+    --network_module=networks.dylora 
+    --network_args conv_dim="1024" conv_alpha="1" unit="256"
     """
 
     print(command)
