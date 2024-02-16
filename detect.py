@@ -12,7 +12,7 @@ sys.path.append(script_dir)
 # Import the necessary functions from the provided code snippet
 from node import load_groundingdino_model, load_sam_model, groundingdino_predict, sam_segment
 
-def detect_and_segment_boxes(image_path, grounding_dino_model_name, sam_model_name, prompt, threshold, crop_resolution,  train_repeats, train_class, output_folder):
+def detect_and_segment_boxes(image_path, grounding_dino_model_name, sam_model_name, segmentation_class, threshold, crop_resolution,  train_repeats, train_class, output_folder):
    
     def extract_biggest_box(boxes):
         box_areas = (boxes[:, 2] - boxes[:, 0]) * (boxes[:, 3] - boxes[:, 1])
@@ -32,7 +32,7 @@ def detect_and_segment_boxes(image_path, grounding_dino_model_name, sam_model_na
     image.save(os.path.join(output_folder, "original.jpg"))
 
     # # Predict boxes using GroundingDINO model
-    boxes = groundingdino_predict(grounding_dino_model, image.convert("RGBA"), prompt, threshold)
+    boxes = groundingdino_predict(grounding_dino_model, image.convert("RGBA"), segmentation_class, threshold)
     print(boxes)
     # Create an ImageDraw object to draw on the image
 
@@ -103,14 +103,15 @@ def canny_edge_detector(image, dilation):
 
 if __name__ == "__main__":
     image_path = sys.argv[1]
+    crop_resolution = int(sys.argv[2])
+
     # image_path = "ComfyUI_temp_upbiy_00029_.png"  # Path to the input image
     grounding_dino_model_name = "GroundingDINO_SwinT_OGC (694MB)"  # GroundingDINO model name
     sam_model_name = "sam_hq_vit_b (379MB)"  # SAM model name
-    prompt = "earring"  # Prompt to detect boxes
+    segmentation_class = "earring"  # Class to segment
     threshold = 0.5  # Detection threshold
-    output_folder = sys.argv[2]  # Path for the output image
-    crop_resolution = 256
+    output_folder = sys.argv[3]  # Path for the output image
     train_repeats = 20
-    train_class = "TOKstyle earring"
+    train_class = "TOKstyle silver oxidized earring"
 
-    detect_and_segment_boxes(image_path, grounding_dino_model_name, sam_model_name, prompt, threshold, crop_resolution, train_repeats, train_class, output_folder)
+    detect_and_segment_boxes(image_path, grounding_dino_model_name, sam_model_name, segmentation_class, threshold, crop_resolution, train_repeats, train_class, output_folder)

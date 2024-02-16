@@ -71,7 +71,7 @@ def download_model(model_name, train_dir):
     
 
 def generate_training_data(image_name, train_dir):
-     os.system(f"python comfyui_segment_anything/detect.py {image_name} output")
+     os.system(f"python comfyui_segment_anything/detect.py {image_name} 512 output")
 
 def train(image_folder, model_path):
     absolute_image_folder = os.path.abspath(image_folder)
