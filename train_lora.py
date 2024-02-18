@@ -17,7 +17,7 @@ def create_training_script(train_folder, model_path):
     --network_alpha="1" 
     --save_model_as=safetensors 
     --network_module=networks.lora 
-    --text_encoder_lr=0
+    --text_encoder_lr=0.00005
     --unet_lr=0.0001 
     --network_dim=512
     --output_name="epicr-earring-512-lr0.0001-0.0" 
