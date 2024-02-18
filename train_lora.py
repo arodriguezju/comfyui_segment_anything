@@ -20,7 +20,7 @@ def create_training_script(train_folder, model_path):
     --text_encoder_lr=0
     --unet_lr=0.0001 
     --network_dim=512
-    --output_name="epicr-earring-512-lr0.0001" 
+    --output_name="epicr-earring-512-lr0.0001-0.0" 
     --max_train_epochs=100
     --no_half_vae 
     --learning_rate=0.0004
