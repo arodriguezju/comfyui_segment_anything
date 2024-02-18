@@ -17,10 +17,10 @@ def create_training_script(train_folder, model_path):
     --network_alpha="1" 
     --save_model_as=safetensors 
     --network_module=networks.lora 
-    --text_encoder_lr=0.0004 
-    --unet_lr=0.0004 
+    --text_encoder_lr=0.0001 
+    --unet_lr=0.0001 
     --network_dim=512
-    --output_name="epicr-earring-1024" 
+    --output_name="epicr-earring-512-lr0.0001" 
     --max_train_epochs=100
     --no_half_vae 
     --learning_rate=0.0004
@@ -36,7 +36,6 @@ def create_training_script(train_folder, model_path):
     --max_data_loader_n_workers="0" 
     --bucket_reso_steps=64 
     --gradient_checkpointing 
-    --xformers 
     --bucket_no_upscale 
     --noise_offset=0.0   
     """
