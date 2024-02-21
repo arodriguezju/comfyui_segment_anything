@@ -19,8 +19,8 @@ def create_training_script(train_folder, model_path):
     --network_module=networks.lora 
     --text_encoder_lr=0.00005
     --unet_lr=0.0001 
-    --network_dim=128
-    --output_name="epicr-earring-128-lr0.0001-0.00005" 
+    --network_dim=64
+    --output_name="epicr-earring-64-lr0.0001-0.00005" 
     --max_train_epochs=100
     --no_half_vae 
     --learning_rate=0.0004
