@@ -20,7 +20,7 @@ def create_training_script(train_folder, model_path):
     --text_encoder_lr=0.0001
     --unet_lr=0.0001 
     --network_dim=128
-    --output_name="epicr-earring-128-lr0.0001-onlyTC" 
+    --output_name="epicr-earring-128-lr0.0001-onlyUnet" 
     --max_train_epochs=100
     --no_half_vae 
     --lr_scheduler="constant" 
@@ -37,7 +37,7 @@ def create_training_script(train_folder, model_path):
     --gradient_checkpointing 
     --bucket_no_upscale 
     --noise_offset=0.0
-    --network_train_text_encoder_only
+    --network_train_unet_only
     """
 
     print(command)
