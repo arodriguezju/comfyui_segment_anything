@@ -17,10 +17,10 @@ def create_training_script(train_folder, model_path):
     --network_alpha=1024
     --save_model_as=safetensors 
     --network_module=networks.lora 
-    --text_encoder_lr=0.0004
+    --text_encoder_lr=0.000001
     --unet_lr=0.00001
     --network_dim=1024
-    --output_name="epicr-earring-1024-lr0.00001-0.0004-a1024" 
+    --output_name="epicr-earring-1024-lr0.00001-0.000001-a1024" 
     --max_train_epochs=100
     --no_half_vae 
     --lr_scheduler="constant" 
