@@ -14,13 +14,13 @@ def create_training_script(train_folder, model_path):
     --train_data_dir="{train_folder}" 
     --resolution="512,512" 
     --output_dir="/workspace/output_training" 
-    --network_alpha="1" 
+    --network_alpha=1024
     --save_model_as=safetensors 
     --network_module=networks.lora 
-    --text_encoder_lr=0.0001
-    --unet_lr=0.0002
-    --network_dim=128
-    --output_name="epicr-earring-128-lr0.0002-0.0001" 
+    --text_encoder_lr=0.00005
+    --unet_lr=0.0001
+    --network_dim=1024
+    --output_name="epicr-earring-1024-lr0.0001-0.0005-a1024" 
     --max_train_epochs=100
     --no_half_vae 
     --lr_scheduler="constant" 
