@@ -18,9 +18,9 @@ def create_training_script(train_folder, model_path):
     --save_model_as=safetensors 
     --network_module=networks.lora 
     --text_encoder_lr=0.0001
-    --unet_lr=0.0001 
+    --unet_lr=0.0002
     --network_dim=128
-    --output_name="epicr-earring-128-lr0.0001-onlyUnet" 
+    --output_name="epicr-earring-128-lr0.0002-0.0001" 
     --max_train_epochs=100
     --no_half_vae 
     --lr_scheduler="constant" 
@@ -37,7 +37,6 @@ def create_training_script(train_folder, model_path):
     --gradient_checkpointing 
     --bucket_no_upscale 
     --noise_offset=0.0
-    --network_train_unet_only
     """
 
     print(command)
