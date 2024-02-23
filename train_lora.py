@@ -25,7 +25,7 @@ def create_training_script(train_folder, model_path):
     --no_half_vae 
     --lr_scheduler="constant" 
     --train_batch_size="1" 
-    --save_every_n_epochs="10" 
+    --save_every_n_epochs="2" 
     --mixed_precision="bf16" 
     --save_precision="bf16" 
     --cache_latents 
