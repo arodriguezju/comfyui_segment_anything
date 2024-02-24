@@ -207,7 +207,7 @@ if __name__ == "__main__":
     threshold = 0.5  # Detection threshold
     output_folder = sys.argv[3]  # Path for the output image
     train_repeats = 20
-    train_class = "TOKstyle silver earring held by a finger"
+    train_class = "TOKstyle earring"
 
 
     image = Image.open(image_path)

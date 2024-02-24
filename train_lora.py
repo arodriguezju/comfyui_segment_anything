@@ -90,7 +90,9 @@ if __name__ == "__main__":
 
     if not os.path.exists(train_folder):
         os.makedirs(train_folder)
-    image_url = "https://huggingface.co/datasets/crom87/test-upload/resolve/main/IMG_1377.jpeg"#sys.argv[1]
+    # image_url = "https://huggingface.co/datasets/crom87/test-upload/resolve/main/IMG_1377.jpeg"#sys.argv[1]
+    image_url = "https://huggingface.co/datasets/crom87/test-upload/resolve/main/img2.jpg"#sys.argv[1]
+
     install_kohya()
     install_grounddino()
     download_image(image_url)
