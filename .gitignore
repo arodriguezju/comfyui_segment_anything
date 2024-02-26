@@ -162,3 +162,4 @@ output/
 models/
 *.jpeg
 *.png
+!backgrounds/

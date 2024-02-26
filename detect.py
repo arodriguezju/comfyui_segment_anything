@@ -5,6 +5,7 @@ import numpy as np
 import torch
 import cv2
 from torchvision.transforms import ToPILImage
+import random
 
 # Ensure the script's directory is in the Python path for module imports
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -193,7 +194,36 @@ def save_image_in_train_folder(image, repeats, name):
     if not os.path.exists(image_class_folder):
         os.makedirs(image_class_folder)
     
-    image.save(os.path.join(image_class_folder, f"{train_class_joined}.jpg"))
+    image.save(os.path.join(image_class_folder, f"{random.randint(0, 9999)}.jpg"))
+
+
+def fill_black_regions_with_backgrounds_efficient(image, backgrounds_folder_path, repeats, train_class):
+    # Load the image with black regions
+    main_image_array = np.array(image.convert('RGBA'))
+
+    # Identify black pixels (or nearly black, if needed)
+    black_pixels_mask = np.all(main_image_array[:, :, :3] == 0, axis=-1)
+
+    # Loop through each image in the backgrounds folder
+    for index, background_image_name in enumerate(os.listdir(backgrounds_folder_path)):
+        background_image_path = os.path.join(backgrounds_folder_path, background_image_name)
+        
+        try:
+            # Open background image, resize it to match the main image, and convert to array
+            background_image = Image.open(background_image_path).resize(image.size).convert('RGBA')
+            background_image_array = np.array(background_image)
+
+            # Use the mask to replace black pixels in the main image with those from the background
+            main_image_array[black_pixels_mask] = background_image_array[black_pixels_mask]
+            save_image_in_train_folder(Image.fromarray(main_image_array).convert('RGB'), repeats, train_class)
+
+        except Exception as e:
+            print(f"Error processing {background_image_name}: {e}")
+
+    
+    # Or return filled_image to work with it directly in Python
+    # return filled_image
+
 
 
 if __name__ == "__main__":
@@ -206,7 +236,7 @@ if __name__ == "__main__":
     segmentation_class = "earring"  # Class to segment
     threshold = 0.5  # Detection threshold
     output_folder = sys.argv[3]  # Path for the output image
-    train_repeats = 20
+    train_repeats = 2
     train_class = "TOKstyle earring"
 
 
@@ -229,18 +259,18 @@ if __name__ == "__main__":
     
     save_image_in_train_folder(cropped_image, train_repeats, train_class)
 
-    augmented_images = 3
+    # augmented_images = 3
 
-    train_repeats_for_augmented = int(train_repeats / augmented_images)
+    train_repeats_for_augmented = train_repeats
 
-    blue_aug = augment_with_background_color(cropped_masked_image, 0, 0, 255)
-    save_image_in_train_folder(blue_aug, train_repeats_for_augmented, train_class + " over a blue background")
-    green_aug = augment_with_background_color(cropped_masked_image, 0, 255, 0)
-    save_image_in_train_folder(green_aug, train_repeats_for_augmented, train_class + " over a green background")
-    red_aug = augment_with_background_color(cropped_masked_image, 255, 0, 0)
-    save_image_in_train_folder(red_aug, train_repeats_for_augmented, train_class + " over a red background")
+    # blue_aug = augment_with_background_color(cropped_masked_image, 0, 0, 255)
+    # save_image_in_train_folder(blue_aug, train_repeats_for_augmented, train_class + " over a blue background")
+    # green_aug = augment_with_background_color(cropped_masked_image, 0, 255, 0)
+    # save_image_in_train_folder(green_aug, train_repeats_for_augmented, train_class + " over a green background")
+    # red_aug = augment_with_background_color(cropped_masked_image, 255, 0, 0)
+    # save_image_in_train_folder(red_aug, train_repeats_for_augmented, train_class + " over a red background")
     
-
+    fill_black_regions_with_backgrounds_efficient(cropped_masked_image, "backgrounds", train_repeats_for_augmented, train_class)
 
 
 
