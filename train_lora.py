@@ -20,7 +20,7 @@ def create_training_script(train_folder, model_path):
     --text_encoder_lr=0.00005
     --unet_lr=0.0001
     --network_dim=1024
-    --output_name="epicr-earring-new-1024-lr0.0001-0.00005-a1" 
+    --output_name="epicr-earring-augmBg-1024-lr0.0001-0.00005-a1" 
     --max_train_epochs=50
     --no_half_vae 
     --lr_scheduler="constant" 
