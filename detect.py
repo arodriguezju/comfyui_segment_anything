@@ -236,7 +236,7 @@ if __name__ == "__main__":
     segmentation_class = "earring"  # Class to segment
     threshold = 0.5  # Detection threshold
     output_folder = sys.argv[3]  # Path for the output image
-    train_repeats = 40
+    train_repeats = 5
     train_class = "TOKstyle earring"
 
 
