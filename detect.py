@@ -257,7 +257,7 @@ if __name__ == "__main__":
     canny.save(os.path.join(output_folder, f"canny_{crop_resolution}.jpg"))
 
     
-    save_image_in_train_folder(cropped_image, train_repeats, train_class)
+    # save_image_in_train_folder(cropped_image, train_repeats, train_class)
 
     # augmented_images = 3
 
