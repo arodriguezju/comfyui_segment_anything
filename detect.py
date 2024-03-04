@@ -151,7 +151,12 @@ def detect_and_segment_boxes(image_path, grounding_dino_model_name, sam_model_na
     image.save(os.path.join(image_class_folder, f"{train_class_joined}.jpg"))
 
 
+def image_to_bw_mask(image):
+    grayscale_image = image.convert("L")
 
+    _, binary_image = cv2.threshold(np.array(grayscale_image), 0, 255, cv2.THRESH_BINARY)
+
+    return Image.fromarray(binary_image)
 
 
 def canny_edge_detector(image, dilation):
@@ -246,12 +251,15 @@ if __name__ == "__main__":
     masked_image = segment(sam_model_name, image, torch_box)
     cropped_image = crop_and_resize(image, torch_box, crop_resolution)
     cropped_masked_image = crop_and_resize(masked_image, torch_box, crop_resolution)
+    cropped_masked_bw_image = image_to_bw_mask(cropped_masked_image)
 
     canny = canny_edge_detector(cropped_image, 1)
 
 
-
+    cropped_masked_image.save(os.path.join(output_folder, "crop_masked.jpg"))
     masked_image.save(os.path.join(output_folder, "masked.jpg"))
+    cropped_masked_bw_image.save(os.path.join(output_folder, "crop_masked_bw.jpg"))
+
     image.save(os.path.join(output_folder, "original.jpg"))
     cropped_image.save(os.path.join(output_folder, f"crop_{crop_resolution}.jpg"))
     canny.save(os.path.join(output_folder, f"canny_{crop_resolution}.jpg"))
