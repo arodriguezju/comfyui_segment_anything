@@ -12,7 +12,7 @@ def create_training_script(train_folder, model_path):
     --max_bucket_reso=2048
     --pretrained_model_name_or_path="{model_path}" 
     --train_data_dir="{train_folder}" 
-    --resolution="512,512" 
+    --resolution="1024,1024" 
     --output_dir="/workspace/output_training" 
     --network_alpha=128
     --save_model_as=safetensors 
@@ -20,8 +20,8 @@ def create_training_script(train_folder, model_path):
     --text_encoder_lr=0.00005
     --unet_lr=0.0001
     --network_dim=1024
-    --output_name="epicr-earring-augmBg-1024-lr0.0001-0.00005-a128" 
-    --max_train_epochs=80
+    --output_name="epicr-earring-augmBg1024-1024-lr0.0001-0.00005-a128" 
+    --max_train_epochs=50
     --no_half_vae 
     --lr_scheduler="constant" 
     --train_batch_size="1" 
@@ -69,7 +69,7 @@ def download_model(model_name, train_dir):
     
 
 def generate_training_data(image_name, train_dir):
-     os.system(f"python comfyui_segment_anything/detect.py {image_name} 512 output")
+     os.system(f"python comfyui_segment_anything/detect.py {image_name} 1024 output")
 
 def train(image_folder, model_path):
     absolute_image_folder = os.path.abspath(image_folder)
