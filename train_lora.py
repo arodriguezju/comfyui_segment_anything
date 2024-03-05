@@ -37,6 +37,7 @@ def create_training_script(train_folder, model_path):
     --gradient_checkpointing 
     --bucket_no_upscale 
     --noise_offset=0.0
+    --xformers
     """
     #  --network_train_unet_only
     print(command)
