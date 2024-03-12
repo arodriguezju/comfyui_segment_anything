@@ -38,6 +38,37 @@ def segment(sam_model_name, image, torch_box):
     #TODO: Check if more than one mask or if any
     return ToPILImage()(images[0].squeeze(0).permute(2, 0, 1))
 
+def image_to_color_mask(image, green_threshold, red_threshold, blue_threshold):
+    # Convert the PIL image to an OpenCV image (numpy array)
+    open_cv_image = np.array(image)
+    
+    # Convert RGB to BGR
+    open_cv_image = open_cv_image[:, :, ::-1].copy()
+
+    # Isolate each channel
+    blue_channel = open_cv_image[:, :, 0]
+    green_channel = open_cv_image[:, :, 1]
+    red_channel = open_cv_image[:, :, 2]
+
+    # Calculate dominance
+    green_dominance = green_channel - (0.5 * red_channel + 0.5 * blue_channel)
+    red_dominance = red_channel - (0.5 * green_channel + 0.5 * blue_channel)
+    blue_dominance = blue_channel - (0.5 * green_channel + 0.5 * red_channel)
+
+    print(green_dominance, red_dominance, blue_dominance)
+    # Create binary masks for each color dominance
+    _, green_mask = cv2.threshold(green_dominance, green_threshold, 255, cv2.THRESH_BINARY)
+    _, red_mask = cv2.threshold(red_dominance, red_threshold, 255, cv2.THRESH_BINARY)
+    _, blue_mask = cv2.threshold(blue_dominance, blue_threshold, 255, cv2.THRESH_BINARY)
+
+    # Combine masks to get a mask where any of the colors is dominant below its threshold
+    combined_mask = np.maximum(np.maximum(green_mask, red_mask), blue_mask)
+
+    # Convert the combined mask back to a PIL image
+    mask_image = Image.fromarray(combined_mask.astype(np.uint8))
+
+    return mask_image
+
 def crop_and_resize(image, box, crop_resolution):
 
     image = image.crop(box.numpy())
@@ -252,6 +283,7 @@ if __name__ == "__main__":
     cropped_image = crop_and_resize(image, torch_box, crop_resolution)
     cropped_masked_image = crop_and_resize(masked_image, torch_box, crop_resolution)
     cropped_masked_bw_image = image_to_bw_mask(cropped_masked_image)
+    cropped_masked_green_image = image_to_color_mask(cropped_masked_image, 20, 255, 255)
 
     canny = canny_edge_detector(cropped_image, 1)
 
@@ -259,6 +291,7 @@ if __name__ == "__main__":
     cropped_masked_image.save(os.path.join(output_folder, "crop_masked.jpg"))
     masked_image.save(os.path.join(output_folder, "masked.jpg"))
     cropped_masked_bw_image.save(os.path.join(output_folder, "crop_masked_bw.jpg"))
+    cropped_masked_green_image.save(os.path.join(output_folder, "crop_masked_green.jpg"))
 
     image.save(os.path.join(output_folder, "original.jpg"))
     cropped_image.save(os.path.join(output_folder, f"crop_{crop_resolution}.jpg"))

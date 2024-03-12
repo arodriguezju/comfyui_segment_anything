@@ -20,8 +20,8 @@ def create_training_script(train_folder, model_path):
     --text_encoder_lr=0.00005
     --unet_lr=0.0001
     --network_dim=1024
-    --output_name="epicr-earring-augmBg1024-1024-lr0.0001-0.00005-a128" 
-    --max_train_epochs=50
+    --output_name="epicr-sand-earring-augmBg1024-1024-lr0.0001-0.00005-a128" 
+    --max_train_epochs=20
     --no_half_vae 
     --lr_scheduler="constant" 
     --train_batch_size="1" 
@@ -90,8 +90,8 @@ if __name__ == "__main__":
 
     if not os.path.exists(train_folder):
         os.makedirs(train_folder)
-    # image_url = "https://huggingface.co/datasets/crom87/test-upload/resolve/main/IMG_1377.jpeg"#sys.argv[1]
-    image_url = "https://huggingface.co/datasets/crom87/test-upload/resolve/main/img2hd.png"#sys.argv[1]
+    image_url = "https://huggingface.co/datasets/crom87/test-upload/resolve/main/IMG_1377.jpeg"#sys.argv[1]
+    # image_url = "https://huggingface.co/datasets/crom87/test-upload/resolve/main/img2hd.png"#sys.argv[1]
 
     install_kohya()
     install_grounddino()
