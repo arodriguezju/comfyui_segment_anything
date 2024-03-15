@@ -2,7 +2,9 @@
 
 import os
 import sys
-#80 steps per image
+
+#50 epcok, 4 repeats, 10 images. Only 20 epocs neede == 800 steps.
+#73 imaegs, 1 repeat, only 11 epocs needed == 803 steps
 def create_training_script(train_folder, model_path):
     command = f"""accelerate launch 
     --num_cpu_threads_per_process=2 
@@ -21,11 +23,11 @@ def create_training_script(train_folder, model_path):
     --unet_lr=0.0001
     --network_dim=1024
     --output_name="epicr-sand-earring-augmBg1024-1024-lr0.0001-0.00005-a128" 
-    --max_train_epochs=25
+    --max_train_epochs=11
     --no_half_vae 
     --lr_scheduler="constant" 
     --train_batch_size="1" 
-    --save_every_n_epochs="5" 
+    --save_every_n_epochs="3" 
     --mixed_precision="bf16" 
     --save_precision="bf16" 
     --cache_latents 
@@ -46,7 +48,7 @@ def create_training_script(train_folder, model_path):
     return " ".join(line.strip() for line in command.splitlines())
 
 def install_kohya():
-    os.system(f"git clone  --branch v22.6.2 https://github.com/bmaltais/kohya_ss.git")
+    os.system(f"git clone  --branch v22.6.2 rhttps://github.com/bmaltais/kohya_ss.git")
     os.chdir("kohya_ss")
     os.system(f"pip install -r requirements.txt")
     os.system(f"pip install bitsandbytes")
