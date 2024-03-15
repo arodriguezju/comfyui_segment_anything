@@ -249,6 +249,7 @@ def fill_regions_with_background_using_mask(image, mask_image, backgrounds_folde
         
         try:
             # Open background image, resize it to match the main image, and convert to array
+            print("Resizing to ", image.size)
             background_image = Image.open(background_image_path).resize(image.size).convert('RGBA')
             background_image_array = np.array(background_image)
 
@@ -304,6 +305,7 @@ def apply_mask_to_image(mask_pil, rgb_pil):
     masked_image = Image.composite(rgb_pil, new_image, mask)
     
     return masked_image
+
 
 if __name__ == "__main__":
     image_path = sys.argv[1]

@@ -46,7 +46,7 @@ def create_training_script(train_folder, model_path):
     return " ".join(line.strip() for line in command.splitlines())
 
 def install_kohya():
-    os.system(f"git clone https://github.com/bmaltais/kohya_ss.git")
+    os.system(f"git clone  --branch v22.6.2 https://github.com/bmaltais/kohya_ss.git")
     os.chdir("kohya_ss")
     os.system(f"pip install -r requirements.txt")
     os.system(f"pip install bitsandbytes")
