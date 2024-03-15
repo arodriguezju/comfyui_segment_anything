@@ -11,6 +11,9 @@ import random
 script_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(script_dir)
 
+backgrounds_folder = os.path.join(script_dir, "backgrounds")
+masks_folder = os.path.join(script_dir, "masks")
+
 # Import the necessary functions from the provided code snippet
 from node import load_groundingdino_model, load_sam_model, groundingdino_predict, sam_segment
 
@@ -36,6 +39,8 @@ def segment(sam_model_name, image, torch_box):
                 torch_box
             )
     #TODO: Check if more than one mask or if any
+    print("masks")
+    # print(masks[0].size)
     return ToPILImage()(images[0].squeeze(0).permute(2, 0, 1))
 
 def image_to_color_mask(image, green_threshold, red_threshold, blue_threshold):
@@ -233,12 +238,10 @@ def save_image_in_train_folder(image, repeats, name):
     image.save(os.path.join(image_class_folder, f"{random.randint(0, 9999)}.jpg"))
 
 
-def fill_black_regions_with_backgrounds_efficient(image, backgrounds_folder_path, repeats, train_class):
-    # Load the image with black regions
+def fill_regions_with_background_using_mask(image, mask_image, backgrounds_folder_path, repeats, train_class):
+    # Load the main image and mask image, convert them to arrays
     main_image_array = np.array(image.convert('RGBA'))
-
-    # Identify black pixels (or nearly black, if needed)
-    black_pixels_mask = np.all(main_image_array[:, :, :3] == 0, axis=-1)
+    mask_array = np.array(mask_image.convert('L'))  # Convert mask to grayscale
 
     # Loop through each image in the backgrounds folder
     for index, background_image_name in enumerate(os.listdir(backgrounds_folder_path)):
@@ -249,18 +252,58 @@ def fill_black_regions_with_backgrounds_efficient(image, backgrounds_folder_path
             background_image = Image.open(background_image_path).resize(image.size).convert('RGBA')
             background_image_array = np.array(background_image)
 
-            # Use the mask to replace black pixels in the main image with those from the background
-            main_image_array[black_pixels_mask] = background_image_array[black_pixels_mask]
-            save_image_in_train_folder(Image.fromarray(main_image_array).convert('RGB'), repeats, train_class)
+            # Calculate the blend ratio based on the mask value
+            blend_ratio = mask_array / 255.0
+            blend_ratio = blend_ratio[:, :, None]  # Make it 3D for broadcasting
+
+            # Blend the images based on the mask
+            blended_image_array = (main_image_array * blend_ratio) + (background_image_array * (1 - blend_ratio))
+
+            # Save the blended image to the training folder
+            save_image_in_train_folder(Image.fromarray(blended_image_array.astype('uint8')).convert('RGB'), repeats, train_class)
 
         except Exception as e:
             print(f"Error processing {background_image_name}: {e}")
 
-    
     # Or return filled_image to work with it directly in Python
     # return filled_image
 
+def erode_mask(mask, erode_px, iterations):
+    # Convert PIL image to OpenCV format
+    image = np.array(mask)
+    
+    # Create erosion kernel
+    kernel = np.ones((erode_px*2+1, erode_px*2+1), np.uint8)
+    
+    # Erode image
+    eroded_image = cv2.erode(image, kernel, iterations=iterations)
+    
+    # Convert back to PIL format
+    eroded_image_pil = Image.fromarray(cv2.cvtColor(eroded_image, cv2.COLOR_GRAY2RGB))
+    
+    return eroded_image_pil
 
+def apply_mask_to_image(mask_pil, rgb_pil):
+    # Ensure the mask is in mode "L" for grayscale
+    mask = mask_pil.convert("L")
+    
+    # Check if aspect ratios are the same
+    # mask_aspect_ratio = mask.size[0] / mask.size[1]
+    # rgb_aspect_ratio = rgb_pil.size[0] / rgb_pil.size[1]
+    
+    # if mask_aspect_ratio != rgb_aspect_ratio:
+    #     raise ValueError(f"The mask and the RGB image have different aspect ratios. {mask_aspect_ratio} {rgb_aspect_ratio}")
+    
+    # Resize mask if necessary
+    if mask.size != rgb_pil.size:
+        mask = mask.resize(rgb_pil.size, Image.LANCZOS)
+    
+    new_image = Image.new("RGB", rgb_pil.size, (0, 0, 0, 0))
+    
+    # Apply the mask
+    masked_image = Image.composite(rgb_pil, new_image, mask)
+    
+    return masked_image
 
 if __name__ == "__main__":
     image_path = sys.argv[1]
@@ -268,33 +311,81 @@ if __name__ == "__main__":
 
     # image_path = "ComfyUI_temp_upbiy_00029_.png"  # Path to the input image
     grounding_dino_model_name = "GroundingDINO_SwinT_OGC (694MB)"  # GroundingDINO model name
-    sam_model_name = "sam_hq_vit_b (379MB)"  # SAM model name
+    sam_model_name = "sam_hq_vit_h (2.57GB)"  # SAM model name
     segmentation_class = "earring"  # Class to segment
     threshold = 0.5  # Detection threshold
     output_folder = sys.argv[3]  # Path for the output image
-    train_repeats = 4
+    train_repeats = 1
     train_class = "TOKstyle earring"
 
 
     image = Image.open(image_path)
     image = ImageOps.exif_transpose(image)
     torch_box = detect_box(grounding_dino_model_name, image, segmentation_class, threshold)
-    masked_image = segment(sam_model_name, image, torch_box)
+
     cropped_image = crop_and_resize(image, torch_box, crop_resolution)
-    cropped_masked_image = crop_and_resize(masked_image, torch_box, crop_resolution)
-    cropped_masked_bw_image = image_to_bw_mask(cropped_masked_image)
+    cropped_image.save(os.path.join(output_folder, f"crop_{crop_resolution}.jpg"))
+
+    save_image_in_train_folder(cropped_image, train_repeats, train_class)
+
+    sam_masked_image = segment(sam_model_name, image, torch_box)
+    sam_masked_image.save(os.path.join(output_folder, "masked_original.jpg"))
+
+    sam_cropped_masked_image = crop_and_resize(sam_masked_image, torch_box, crop_resolution)
+
+    #Masks
+    sam_cropped_mask_bw_image = image_to_bw_mask(sam_cropped_masked_image)
+    sam_cropped_mask_bw_image.save(os.path.join(output_folder, "crop_mask_sam.jpg"))
+    fill_regions_with_background_using_mask(cropped_image, sam_cropped_mask_bw_image, backgrounds_folder, train_repeats, train_class)
+    
+    cropped_mask_bw_image_eroded = erode_mask(sam_cropped_mask_bw_image, 1, 3)
+    fill_regions_with_background_using_mask(cropped_image, cropped_mask_bw_image_eroded, backgrounds_folder, train_repeats, train_class)
+    
+    #!!Use original size for crops/segmentation. Be sure we don't lose quality because of crop. Only resize later. 
+    for filename in os.listdir(masks_folder):
+        file_path = os.path.join(masks_folder, filename)
+        try:  
+            mask = Image.open(file_path).convert("RGB")
+            fill_regions_with_background_using_mask(cropped_image, mask, backgrounds_folder, train_repeats, train_class)
+        except Exception as e:
+            print(f"Error processing {filename}: {e}")
+            continue
+
+    exit()
+    cropped_mask_bw_image_eroded = erode_mask(cropped_mask_bw_image, 1, 3)
+    cropped_mask_bw_image_eroded.save(os.path.join(output_folder, "crop_mask_bw_eroded.jpg"))
+
+    cropped_mask_bw_image_eroded2 = erode_mask(cropped_mask_bw_image, 1, 5)
+    cropped_mask_bw_image_eroded2.save(os.path.join(output_folder, "crop_mask_bw_eroded2.jpg"))
+
+    external_mask1 = Image.open("masks/ComfyUI_temp_gobsl_00041_.png")
+    external_mask2 = Image.open("masks/ComfyUI_temp_jgrpp_00001_.png")
+
+    #Masked
+    crop_masked = sam_cropped_masked_image
+    crop_masked.save(os.path.join(output_folder, "crop_masked.jpg"))
+
+    crop_masked_eroded = apply_mask_to_image(cropped_mask_bw_image_eroded, cropped_image)
+    crop_masked_eroded.save(os.path.join(output_folder, "crop_masked_eroded.jpg"))
+
+    crop_masked_eroded2 = apply_mask_to_image(cropped_mask_bw_image_eroded2, cropped_image)
+    crop_masked_eroded2.save(os.path.join(output_folder, "crop_masked_eroded2.jpg"))
+
+    crop_masked_external1 = apply_mask_to_image(external_mask1, cropped_image)
+    crop_masked_external1.save(os.path.join(output_folder, "crop_masked_external1.jpg"))
+
+    crop_masked_external2 = apply_mask_to_image(external_mask2, cropped_image)
+    crop_masked_external2.save(os.path.join(output_folder, "crop_masked_external2.jpg"))
+
+    
     cropped_masked_green_image = image_to_color_mask(cropped_masked_image, 20, 255, 255)
 
     canny = canny_edge_detector(cropped_image, 1)
 
 
-    cropped_masked_image.save(os.path.join(output_folder, "crop_masked.jpg"))
-    masked_image.save(os.path.join(output_folder, "masked.jpg"))
-    cropped_masked_bw_image.save(os.path.join(output_folder, "crop_masked_bw.jpg"))
     cropped_masked_green_image.save(os.path.join(output_folder, "crop_masked_green.jpg"))
 
     image.save(os.path.join(output_folder, "original.jpg"))
-    cropped_image.save(os.path.join(output_folder, f"crop_{crop_resolution}.jpg"))
     canny.save(os.path.join(output_folder, f"canny_{crop_resolution}.jpg"))
 
     
@@ -311,7 +402,7 @@ if __name__ == "__main__":
     # red_aug = augment_with_background_color(cropped_masked_image, 255, 0, 0)
     # save_image_in_train_folder(red_aug, train_repeats_for_augmented, train_class + " over a red background")
     
-    fill_black_regions_with_backgrounds_efficient(cropped_masked_image, "backgrounds", train_repeats_for_augmented, train_class)
+    # fill_black_regions_with_backgrounds_efficient(cropped_masked_image, "backgrounds", train_repeats_for_augmented, train_class)
 
 
 

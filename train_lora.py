@@ -2,7 +2,7 @@
 
 import os
 import sys
-
+#80 steps per image
 def create_training_script(train_folder, model_path):
     command = f"""accelerate launch 
     --num_cpu_threads_per_process=2 
@@ -21,7 +21,7 @@ def create_training_script(train_folder, model_path):
     --unet_lr=0.0001
     --network_dim=1024
     --output_name="epicr-sand-earring-augmBg1024-1024-lr0.0001-0.00005-a128" 
-    --max_train_epochs=20
+    --max_train_epochs=25
     --no_half_vae 
     --lr_scheduler="constant" 
     --train_batch_size="1" 
